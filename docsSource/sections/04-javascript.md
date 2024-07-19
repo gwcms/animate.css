@@ -59,3 +59,43 @@ animateCSS('.my-element', 'bounce').then((message) => {
 ```
 
 If you had a hard time understanding the previous function, have a look at [const](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const), [classList](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList), [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), and [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+
+Add observer for element to fire animation after scrolled into view:
+
+```javascript
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.animate__animated').forEach(function(element) {
+        console.log(element.classList);
+        
+        const classes = element.classList;
+        for (let i = 0; i < classes.length; i++) {
+            if(classes[i] != 'animate__animated' && classes[i].indexOf('animate__') != -1){
+                element.dataset.animationid = classes[i];
+                element.classList.remove(classes[i]);
+            }
+        }            
+    });
+});
+		
+		
+document.addEventListener("DOMContentLoaded", function() {
+    const observer = new IntersectionObserver(entries => {
+	entries.forEach(entry => {
+	    if (entry.isIntersecting) {
+		const animationClass =  $(entry.target).data('animationid'); 
+
+
+		if (animationClass) {
+		    entry.target.classList.add(animationClass);
+		}
+		observer.unobserve(entry.target); // Stop observing after animation is triggered
+	    }
+	});
+    });
+
+    document.querySelectorAll('.animate__animated').forEach(div => {
+	observer.observe(div);
+    });
+});
+```
